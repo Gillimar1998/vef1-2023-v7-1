@@ -36,7 +36,7 @@
 
 /**
  * Fylki af vörum sem hægt er að kaupa.
- * @type {Array<Product>}
+ * @type {Array<Product>}s
  */
 const products = [
   // Fyrsta stak í fylkinu, verður aðgengilegt sem `products[0]`
@@ -121,12 +121,22 @@ const cart = {
  * const price = formatPrice(123000);
  * console.log(price); // Skrifar út `123.000 kr.`
  * @param {number} price Verð til að sníða.
- * @returns Verð sniðið með íslenskum krónu.
+ * @returns {string}Verð sniðið með íslenskum krónu.
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl
  */
-function formatPrice(price) {
-  /* Útfæra */
-}
+    const count = 123000;
+
+    function log(locale) {
+      console.log( 
+        new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(count)
+      );
+    }
+
+    log('is-IS');
+
 
 /**
  * Athuga hvort `num` sé heiltala á bilinu `[min, max]`.
@@ -136,7 +146,7 @@ function formatPrice(price) {
  * @returns `true` ef `num` er heiltala á bilinu `[min, max]`, annars `false`.
  */
 function validateInteger(num, min = 0, max = Infinity) {
-  /* Útfæra */
+  return min <= num && num <= max;
 }
 
 /**
@@ -151,7 +161,13 @@ function validateInteger(num, min = 0, max = Infinity) {
  * @returns Streng sem inniheldur upplýsingar um vöru og hugsanlega fjölda af henni.
  */
 function formatProduct(product, quantity = undefined) {
-  /* Útfæra */
+  if (quantity && quantity > 1) {
+
+    const total = formatPrice(quantity * product.price);
+    return `${product.title} - ${quantity} * ${formatPrice(product.price)} samtals ${total}`;
+
+  }
+  return `${product.title} - ${product.price}`;
 }
 
 /**
@@ -165,10 +181,31 @@ function formatProduct(product, quantity = undefined) {
  * @param {Cart} cart Karfa til að fá upplýsingar um.
  * @returns Streng sem inniheldur upplýsingar um körfu.
  */
+let cart = [
+  {name: "HTML húfa", description: " Stylish húfa with HTML logo", price: 5000, quantity: 1},
+  {name: "CSS sokkar", description: "Comfortable socks with CSS design", price: 3000, quantity: 2},
+  {name: "JavaScript jakki", description: "Mjög töff jakki fyrir öll sem skrifa JavaScript reglulega", price: 20000, quantity: 1},
+];
+  
 function cartInfo(cart) {
-  /* Útfæra */
-}
+    let formattedLines = cart.map(item => {
+     let total = item.price * item.quantity;
+     let line = `$item.name} (${item,description}) - `;
+     if (item.quantity > 1) {
+      line += `${item.name} - ${item.quantity}*${item.price} kr. samtals ${total} kr. `;
+     } else {
+      line += `${item.name} - ${total} kr.`;
+     }
+    })
+    let grandTotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
+    formattedLines.push(`Samtals: ${grandTotal} kr.`);
+
+    return formattedLines.join("\n");
+  }
+
+
+  
 // --------------------------------------------------------
 // Föll fyrir forritið
 
@@ -238,6 +275,8 @@ function addProduct() {
     description,
     price,
   };
+
+  console.log(product)
 
   // Bætum vörunni aftast við fylkið okkar.
   products.push(product);
